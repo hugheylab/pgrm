@@ -15,7 +15,7 @@ editor_options:
 knitr::opts_chunk$set(collapse = TRUE, comment = '#>', fig.retina = 2, message = FALSE)
 ```
 
-The Phenotype Genotype Reference Map (PGRM) is a set of associations from the ([NHGRI-EBI GWAS catalog](https://www.ebi.ac.uk/gwas/). The pgrm package enables users to calculate replication related measures on test cohorts.
+The Phenotype Genotype Reference Map (PGRM) is a set of associations from the [NHGRI-EBI GWAS catalog](https://www.ebi.ac.uk/gwas/). The pgrm package enables users to calculate replication related measures on test cohorts.
 
 This vignette shows how replication measures can be calculated based on summary statistics from a test cohort. (To generate summary statistics from raw data, see the run_PGRM_assoc() function.)
 
@@ -28,7 +28,7 @@ library('data.table')
 
 ## Load GWAS summary statistics for test cohort
 
-The first step is to load in a file of summary statistics. This file must include columns for the SNP, phecode, cases, controls, odds ratios, and P-values. 95% confidence intervals are optional but recommended. SNPs must be denoted by a string with the chromosome, position, reference and alternate allele, separated by ":". Builds hg19 and hg37 are both supported. Odds ratios and 95% upper/lower confidence invervals (U95, L95) should be oriented to the reference allele.
+The first step is to load in a file of summary statistics. This file must include columns for the SNP, phecode, cases, controls, odds ratios, and P-values. 95% confidence intervals are optional but recommended. SNPs must be denoted by a string with the chromosome, position, reference and alternate allele, separated by ":". Builds hg19 and hg37 are both supported. Odds ratios and 95% upper/lower confidence invervals (U95, L95) should be oriented to the alternate allele.
 
 In the example below, we open a csv file containing summary statistics (in this case, the summary statistics from the BioVU cohort) using the fread() function. Alternatively you can read your datafile in as a data.frame and convert it to a data.table using the function data.table().
 
@@ -39,11 +39,11 @@ d=fread(
 head(d)
 ```
 
-## Annotate test chort summary statistics
+## Annotate test cohort summary statistics
 
 Next, you can add annotations from the PGRM to the test cohort results with the annotate_results() function. Use the build argument to specify the build of your SNP labels (hg19 or hg38). The ancestry argument should be set to the genetic ancestry of the cohort (EAS, EUR, AFR, SAS, AMR, and ALL).
 
-The annotate_results() funciton will annotate all SNP/phenotype pairs that are present in both the summary statistics table and the PGRM, and returns a data.table of annotated summary statistics. The annotation includes information about power, replication, and the source study of the association. A boolean variable `powered` indicates if the association is powered at 80% (given the reported odds ratio and allele frequency, along with the case and control counts from the test cohort). A boolean variable `rep` indicates if the association is replicated in the test cohort at p<0.05 and the direction of effect is consistent in the source and test summary statistics. To match on the direction of effect, the odds ratios in the test cohort must be oriented to the alternate allle. If your data is not orginalized in this way, this functionality can be suppressed with the opion use_allele_dir==FALSE.
+The annotate_results() function will annotate all SNP/phenotype pairs that are present in both the summary statistics table and the PGRM, and returns a data.table of annotated summary statistics. The annotation includes information about power, replication, and the source study of the association. A boolean variable `powered` indicates if the association is powered at 80% (given the catalog reported odds ratio and GnomAD ancestry-specific allele frequency, along with the case and control counts from the test cohort). A boolean variable `rep` indicates if the association is replicated in the test cohort at p<0.05 and the direction of effect is consistent in the source and test summary statistics. To match on the direction of effect, the odds ratios in the test cohort must be oriented to the alternate allele. If your data is not oriented in this way, this functionality can be suppressed with the option use_allele_dir==FALSE.
 
 ```{r}
 anno = annotate_results(d, ancestry = 'EUR', build = 'hg19', calculate_power = TRUE, LOUD = FALSE)
